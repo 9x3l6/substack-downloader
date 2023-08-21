@@ -68,25 +68,28 @@ def save_files(directory, items):
         save_article_images(directory, item)
 
 def save_image(url, file_path):
-    data = requests.get(url).content
-    ext = os.path.splitext(url)[1]
-    if ext:
-        with open('%s%s' % (file_path, ext), 'wb') as file:
-            file.write(data)
+    if url:
+        data = requests.get(url).content
+        ext = os.path.splitext(url)[1]
+        if ext:
+            with open('%s%s' % (file_path, ext), 'wb') as file:
+                file.write(data)
 
 def save_article_thumb(directory, item):
     url = item['thumb']
-    file_path = '%s%s%s' % (directory, os.path.sep, os.path.basename(item['link']))
-    save_image(url, file_path)
+    if url:
+        file_path = '%s%s%s' % (directory, os.path.sep, os.path.basename(item['link']))
+        save_image(url, file_path)
 
 def save_article_images(directory, item):
     def download_image(url):
-        ext = os.path.splitext(url)[1]
-        file_path = '%s%s%s%s%s' % (directory, os.path.sep, os.path.basename(item['link']), os.path.sep, os.path.basename(url).replace(ext, ''))
-        d = os.path.dirname(file_path)
-        if not os.path.isdir(d):
-            os.makedirs(d)
-        save_image(url, file_path)
+        if url:
+            ext = os.path.splitext(url)[1]
+            file_path = '%s%s%s%s%s' % (directory, os.path.sep, os.path.basename(item['link']), os.path.sep, os.path.basename(url).replace(ext, ''))
+            d = os.path.dirname(file_path)
+            if not os.path.isdir(d):
+                os.makedirs(d)
+            save_image(url, file_path)
     if item['images']:
         if type(item['images']) == list:
             [download_image(img.attrs['src']) for img in item['images']]
